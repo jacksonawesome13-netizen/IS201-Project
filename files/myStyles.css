@@ -1,0 +1,349 @@
+/* ============================================================
+   myStyles.css — Custom stylesheet for La Cucina Italiana
+   Jackson DeBuck — From-scratch page
+   ============================================================ */
+
+/* --- CSS Variables ----------------------------------------- */
+:root {
+    --cream: #faf6f0;
+    --warm-white: #fffdf9;
+    --terracotta: #c0522b;
+    --terracotta-dark: #8b3a1e;
+    --olive: #5a6e2c;
+    --deep-brown: #2c1a0e;
+    --gold: #c9a84c;
+    --text-body: #3a2a1a;
+    --text-muted: #7a6a5a;
+    --alt-bg: #f0ebe3;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'Source Serif 4', Georgia, serif;
+}
+
+/* --- Base Reset & Body ------------------------------------- */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--cream);
+    color: var(--text-body);
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    line-height: 1.75;
+}
+
+/* --- DIV 1: Top Navigation Bar ----------------------------- */
+#top-nav {
+    background-color: var(--deep-brown);
+    padding: 0.65rem 2rem;
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+#top-nav a {
+    color: var(--gold);
+    text-decoration: none;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    letter-spacing: 0.04em;
+    transition: color 0.2s;
+}
+
+#top-nav a:hover {
+    color: #fff;
+}
+
+/* --- DIV 2: Hero Section ----------------------------------- */
+#hero {
+    background-color: var(--terracotta);
+    background-image:
+        linear-gradient(160deg, rgba(44,26,14,0.72) 0%, rgba(192,82,43,0.55) 60%, rgba(90,110,44,0.4) 100%),
+        url('https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=1400&q=80');
+    background-size: cover;
+    background-position: center;
+    min-height: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+#hero-text h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    font-style: italic;
+    color: #fff;
+    text-shadow: 0 2px 24px rgba(0,0,0,0.45);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+}
+
+.hero-sub {
+    font-family: var(--font-body);
+    font-size: 1.2rem;
+    color: rgba(255,255,255,0.88);
+    font-weight: 300;
+    letter-spacing: 0.06em;
+}
+
+/* --- DIV 3: Anchor Navigation ------------------------------ */
+#anchor-nav {
+    background-color: var(--deep-brown);
+    padding: 0.8rem 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    justify-content: center;
+}
+
+#anchor-nav a {
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.2rem 0;
+    border-bottom: 1px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+#anchor-nav a:hover {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+}
+
+/* --- DIV 4: Content Sections ------------------------------- */
+.content-section {
+    padding: 4rem 2rem;
+}
+
+.content-section.alt-bg {
+    background-color: var(--alt-bg);
+}
+
+.section-inner {
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+.content-section h2 {
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+    color: var(--terracotta-dark);
+    margin-bottom: 1.25rem;
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 0.5rem;
+    display: inline-block;
+}
+
+.content-section p {
+    color: var(--text-body);
+    margin-bottom: 1rem;
+    font-size: 1.05rem;
+}
+
+/* --- Ordered List with nested Unordered List --------------- */
+.main-list {
+    padding-left: 1.5rem;
+    margin-top: 1rem;
+}
+
+.main-list > li {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--terracotta-dark);
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+}
+
+.sub-list {
+    font-family: var(--font-body);
+    font-size: 0.98rem;
+    color: var(--text-body);
+    padding-left: 1.4rem;
+    margin-top: 0.4rem;
+    list-style-type: disc;
+}
+
+.sub-list li {
+    margin-bottom: 0.25rem;
+    line-height: 1.6;
+}
+
+/* --- DIV 5: Regions Grid ----------------------------------- */
+#regions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 1.25rem;
+    margin: 1.5rem 0;
+}
+
+.region-card {
+    background: var(--warm-white);
+    border: 1px solid rgba(201,168,76,0.35);
+    border-radius: 6px;
+    padding: 1.25rem;
+    border-top: 3px solid var(--terracotta);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.region-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(44,26,14,0.12);
+}
+
+.region-card h3 {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    color: var(--deep-brown);
+    margin-bottom: 0.5rem;
+}
+
+.region-card p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* --- Food Image -------------------------------------------- */
+#food-image-container {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+#pasta-image {
+    width: 100%;
+    max-width: 720px;
+    height: 340px;
+    object-fit: cover;
+    border-radius: 6px;
+    box-shadow: 0 10px 40px rgba(44,26,14,0.2);
+}
+
+.image-caption {
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 0.6rem;
+}
+
+/* --- DIV 6: Video Wrapper ---------------------------------- */
+#video-wrapper {
+    margin-top: 1.5rem;
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    border-radius: 6px;
+    box-shadow: 0 10px 40px rgba(44,26,14,0.25);
+}
+
+#video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* --- Tableau Container ------------------------------------- */
+#tableau-container {
+    margin-top: 1.5rem;
+    background: var(--warm-white);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(44,26,14,0.1);
+}
+
+/* --- DIV 7: Mini Resume ------------------------------------ */
+#mini-resume {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.resume-block {
+    background: var(--warm-white);
+    padding: 1.25rem 1.5rem;
+    border-radius: 6px;
+    border-left: 4px solid var(--terracotta);
+}
+
+.resume-block h3 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    color: var(--terracotta-dark);
+    margin-bottom: 0.75rem;
+}
+
+.resume-block ul {
+    padding-left: 1.1rem;
+    font-size: 0.94rem;
+    color: var(--text-body);
+}
+
+.resume-block ul li {
+    margin-bottom: 0.4rem;
+    line-height: 1.5;
+}
+
+.btn-link {
+    display: inline-block;
+    background-color: var(--terracotta);
+    color: #fff;
+    text-decoration: none;
+    font-family: var(--font-body);
+    padding: 0.6rem 1.4rem;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    transition: background-color 0.2s;
+}
+
+.btn-link:hover {
+    background-color: var(--terracotta-dark);
+}
+
+/* --- Footer ------------------------------------------------ */
+#scratch-footer {
+    background-color: var(--deep-brown);
+    color: rgba(255,255,255,0.7);
+    text-align: center;
+    padding: 2rem;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+}
+
+#scratch-footer a {
+    color: var(--gold);
+    text-decoration: none;
+}
+
+#scratch-footer a:hover {
+    text-decoration: underline;
+}
+
+/* --- Responsive -------------------------------------------- */
+@media (max-width: 600px) {
+    #top-nav {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
+    #anchor-nav {
+        gap: 0.4rem 1rem;
+    }
+    .content-section h2 {
+        font-size: 1.6rem;
+    }
+}
