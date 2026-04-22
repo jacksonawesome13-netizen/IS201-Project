@@ -22,6 +22,29 @@
             .resume-header-bar { background: #212529; color: #fff; padding: 2.5rem 0; margin-bottom: 2rem; }
             .resume-header-bar h1 { font-family: 'Lora', serif; margin-bottom: 0.25rem; }
             .resume-header-bar p { margin: 0; color: #adb5bd; }
+ /* Photo fills the banner height */
+.resume-header-bar {
+    position: relative; /* ensure absolute children anchor correctly */
+}
+
+.resume-photo {
+    position: absolute;
+    top: 0;
+    bottom: 0;        /* makes the container match the banner height */
+    left: 20px;       /* spacing from left edge */
+    display: flex;
+    align-items: center;
+}
+
+.resume-photo img {
+    height: 100%;     /* fills the banner vertically */
+    width: auto;      /* keeps proportions correct */
+    border-radius: 6px;
+}
+/* Push text right so it doesn't overlap the photo */
+.resume-header-content {
+    margin-left: 120px; /* adjust until it looks perfect */
+}
         </style>
     </head>
     <body>
@@ -43,17 +66,21 @@
             </div>
         </nav>
 
-        <!-- Resume Header Bar -->
-        <div class="resume-header-bar">
-            <div class="container px-4 px-lg-5">
-                <div class="row gx-4 gx-lg-5 justify-content-center">
-                    <div class="col-md-10 col-lg-8 col-xl-7">
-                        <h1>Jackson DeBuck</h1>
-                        <p>Computer Science Student &bull; BYU &bull; Provo, UT</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <!-- Resume Header Bar -->
+<div class="resume-header-bar">
+
+    <!-- PHOTO -->
+    <div class="resume-photo">
+        <img src="assets/img/Personal Photo.png" alt="Personal Photo">
+    </div>
+
+    <!-- TEXT -->
+    <div class="container px-4 px-lg-5 resume-header-content">
+        <h1>Jackson DeBuck</h1>
+        <p>Computer Science Student • BYU • Provo, UT</p>
+    </div>
+
+</div>
 
         <main class="mb-5">
             <div class="container px-4 px-lg-5">

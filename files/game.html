@@ -1,585 +1,393 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>George's Great Banana Dash</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800&display=swap');
+  <meta charset="UTF-8" />
+  <title>Monkey Runner</title>
+  <style>
+    body {
+      margin: 0;
+      background: #f2f2f2;
+      font-family: system-ui, sans-serif;
+    }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+    #page-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 40px;
+    }
 
-        body {
-            background: linear-gradient(180deg, #87CEEB 0%, #b8e4f7 60%, #d4edda 100%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            font-family: 'Nunito', sans-serif;
-            overflow: hidden;
-        }
+    #game-container {
+      border: 2px solid #333;
+      background: linear-gradient(#87ceeb 60%, #e0cda9 60%);
+      position: relative;
+    }
 
-        h1 {
-            font-family: 'Fredoka One', cursive;
-            font-size: 2.4rem;
-            color: #c0522b;
-            text-shadow: 3px 3px 0 #ffd966, 5px 5px 0 rgba(0,0,0,0.1);
-            margin-bottom: 6px;
-            letter-spacing: 0.02em;
-        }
+    #score, #highscore {
+      position: absolute;
+      top: 10px;
+      padding: 4px 8px;
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      font-size: 14px;
+      border-radius: 4px;
+    }
 
-        #ui-bar {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-            margin-bottom: 10px;
-        }
+    #score { left: 10px; }
+    #highscore { right: 10px; }
 
-        .stat {
-            font-size: 1.1rem;
-            font-weight: 800;
-            color: #3a2a1a;
-            background: rgba(255,255,255,0.75);
-            padding: 4px 14px;
-            border-radius: 20px;
-            border: 2px solid #ffd966;
-        }
+    #message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 16px;
+      text-align: center;
+      display: none;
+    }
 
-        #game-canvas {
-            border: 4px solid #c0522b;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.25);
-            display: block;
-            cursor: pointer;
-        }
-
-        #instructions {
-            margin-top: 10px;
-            font-size: 0.9rem;
-            color: #5a3a1a;
-            background: rgba(255,255,255,0.7);
-            padding: 6px 16px;
-            border-radius: 20px;
-        }
-
-        #instructions kbd {
-            background: #fff;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-            padding: 1px 5px;
-            font-size: 0.85rem;
-        }
-
-        #back-link {
-            margin-top: 12px;
-            color: #c0522b;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
-        #back-link:hover { text-decoration: underline; }
-    </style>
+    #back-link {
+      display: block;
+      margin-top: 20px;
+      font-size: 18px;
+      text-decoration: none;
+      color: #333;
+      text-align: center;
+    }
+  </style>
 </head>
+
 <body>
+  <div id="page-wrapper">
 
-<h1>🍌 George's Great Banana Dash</h1>
-<div id="ui-bar">
-    <div class="stat">🍌 Bananas: <span id="score">0</span></div>
-    <div class="stat">❤️ Lives: <span id="lives">3</span></div>
-    <div class="stat">📏 Level: <span id="level">1</span></div>
-</div>
+    <div id="game-container">
+      <canvas id="game" width="900" height="300"></canvas>
+      <div id="score">Score: 0</div>
+      <div id="highscore">High Score: 0</div>
+      <div id="message">Press SPACE or ↑ to start and jump</div>
+    </div>
 
-<canvas id="game-canvas" width="800" height="400"></canvas>
-<div id="instructions">
-    <kbd>SPACE</kbd> or <kbd>↑</kbd> to jump &nbsp;|&nbsp; Tap/click canvas to jump &nbsp;|&nbsp; Collect bananas, avoid obstacles!
-</div>
-<a id="back-link" href="fromScratch.html">← Back to Italian Food Page</a>
+    <a id="back-link" href="fromScratch.html">
+      ← Back to Italian Food Page
+    </a>
 
-<script>
-const canvas = document.getElementById('game-canvas');
-const ctx = canvas.getContext('2d');
-const scoreEl = document.getElementById('score');
-const livesEl = document.getElementById('lives');
-const levelEl = document.getElementById('level');
+  </div>
 
-const W = canvas.width;
-const H = canvas.height;
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+    const scoreEl = document.getElementById("score");
+    const highScoreEl = document.getElementById("highscore");
+    const messageEl = document.getElementById("message");
 
-// ── Game State ─────────────────────────────────────────────
-let state = 'start'; // 'start' | 'playing' | 'dead' | 'over'
-let score = 0;
-let lives = 3;
-let level = 1;
-let frameCount = 0;
-let speed = 3.5;
-let scrollX = 0;
+    const groundY = 240;
+    let lastTime = 0;
+    let gameSpeed = 300;
+    let gravity = 1500;
+    let isRunning = false;
+    let score = 0;
 
-// ── George (the monkey) ───────────────────────────────────
-const GROUND = H - 70;
-const george = {
-    x: 110,
-    y: GROUND,
-    w: 44,
-    h: 54,
-    vy: 0,
-    jumping: false,
-    frame: 0,
-    frameTimer: 0,
-    dead: false,
-    invincible: 0,
-};
+    let highScore = Number(localStorage.getItem("monkeyHighScore")) || 0;
+    highScoreEl.textContent = "High Score: " + highScore;
 
-// ── Buildings (platforms) ─────────────────────────────────
-let buildings = [];
-function buildingColor(i) {
-    const colors = ['#e8d5b7','#d4b896','#c9a47c','#b8956a','#a07850'];
-    return colors[i % colors.length];
-}
-function generateBuildings() {
-    buildings = [];
-    let x = 0;
-    while (x < W * 3) {
-        const w = 90 + Math.floor(Math.random() * 80);
-        const h = 60 + Math.floor(Math.random() * 140);
-        buildings.push({ x, w, h, color: buildingColor(buildings.length) });
-        x += w + 4 + Math.floor(Math.random() * 30);
-    }
-}
-generateBuildings();
-
-// ── Platforms (building tops george runs on) ───────────────
-function getBuildingTop(bx) {
-    for (const b of buildings) {
-        const rx = b.x - scrollX;
-        if (bx + george.w > rx && bx < rx + b.w) {
-            return H - b.h;
-        }
-    }
-    return GROUND;
-}
-
-// ── Bananas ────────────────────────────────────────────────
-let bananas = [];
-function spawnBananas() {
-    bananas = [];
-    for (let i = 0; i < 18 + level * 4; i++) {
-        const wx = 300 + i * 180 + Math.random() * 60;
-        bananas.push({ wx, collected: false, bob: Math.random() * Math.PI * 2 });
-    }
-}
-spawnBananas();
-
-// ── Obstacles ─────────────────────────────────────────────
-let obstacles = [];
-function spawnObstacles() {
-    obstacles = [];
-    for (let i = 0; i < 5 + level * 2; i++) {
-        const wx = 500 + i * 400 + Math.random() * 200;
-        obstacles.push({ wx, type: Math.random() < 0.5 ? 'crate' : 'pipe' });
-    }
-}
-spawnObstacles();
-
-// ── Jump ───────────────────────────────────────────────────
-function jump() {
-    if (state === 'start' || state === 'dead') { startGame(); return; }
-    if (state === 'over') { resetGame(); return; }
-    if (!george.jumping) {
-        george.vy = -13.5;
-        george.jumping = true;
-    }
-}
-
-function startGame() {
-    state = 'playing';
-    score = 0; lives = 3; level = 1; speed = 3.5;
-    frameCount = 0; scrollX = 0;
-    george.y = GROUND; george.vy = 0; george.jumping = false; george.dead = false; george.invincible = 0;
-    generateBuildings(); spawnBananas(); spawnObstacles();
-    updateUI();
-}
-
-function resetGame() { startGame(); }
-
-// ── Input ─────────────────────────────────────────────────
-document.addEventListener('keydown', e => {
-    if (e.code === 'Space' || e.code === 'ArrowUp') { e.preventDefault(); jump(); }
-});
-canvas.addEventListener('click', jump);
-canvas.addEventListener('touchstart', e => { e.preventDefault(); jump(); });
-
-// ── Drawing helpers ────────────────────────────────────────
-
-function drawSky() {
-    const grad = ctx.createLinearGradient(0, 0, 0, H * 0.7);
-    grad.addColorStop(0, '#5bb3e8');
-    grad.addColorStop(1, '#c8e8f7');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, W, H);
-
-    // Clouds
-    ctx.fillStyle = 'rgba(255,255,255,0.85)';
-    drawCloud(((120 - scrollX * 0.15) % (W + 200)) - 100, 60, 80);
-    drawCloud(((380 - scrollX * 0.12) % (W + 200)) - 100, 40, 55);
-    drawCloud(((640 - scrollX * 0.18) % (W + 200)) - 100, 80, 70);
-    drawCloud(((900 - scrollX * 0.1) % (W + 200)) - 100, 55, 60);
-}
-
-function drawCloud(cx, cy, size) {
-    ctx.beginPath();
-    ctx.arc(cx, cy, size * 0.55, 0, Math.PI * 2);
-    ctx.arc(cx + size * 0.4, cy - size * 0.15, size * 0.45, 0, Math.PI * 2);
-    ctx.arc(cx - size * 0.35, cy + size * 0.05, size * 0.38, 0, Math.PI * 2);
-    ctx.arc(cx + size * 0.75, cy + size * 0.1, size * 0.35, 0, Math.PI * 2);
-    ctx.fill();
-}
-
-function drawGround() {
-    // Ground strip
-    ctx.fillStyle = '#7cb87a';
-    ctx.fillRect(0, GROUND + 54, W, H - GROUND - 54);
-    ctx.fillStyle = '#5a9a58';
-    ctx.fillRect(0, GROUND + 54, W, 6);
-}
-
-function drawBuildings() {
-    for (const b of buildings) {
-        const rx = b.x - scrollX;
-        if (rx > W + 20 || rx + b.w < -20) continue;
-        const by = H - b.h;
-
-        // Building body
-        ctx.fillStyle = b.color;
-        ctx.fillRect(rx, by, b.w, b.h);
-
-        // Windows
-        ctx.fillStyle = 'rgba(255,255,200,0.7)';
-        const cols = Math.floor(b.w / 22);
-        const rows = Math.floor(b.h / 28);
-        for (let r = 0; r < rows - 1; r++) {
-            for (let c = 0; c < cols; c++) {
-                const wx2 = rx + 8 + c * 22;
-                const wy = by + 10 + r * 28;
-                if (wx2 + 12 < rx + b.w - 4) {
-                    ctx.fillRect(wx2, wy, 12, 14);
-                }
-            }
-        }
-
-        // Rooftop edge
-        ctx.fillStyle = '#8a6a4a';
-        ctx.fillRect(rx - 3, by - 4, b.w + 6, 6);
-    }
-}
-
-function drawBanana(x, y, t) {
-    const by2 = y + Math.sin(t * 0.04 + 0) * 5;
-    ctx.save();
-    ctx.translate(x + 10, by2 + 14);
-    ctx.rotate(0.4);
-    ctx.beginPath();
-    ctx.strokeStyle = '#f5c518';
-    ctx.lineWidth = 7;
-    ctx.lineCap = 'round';
-    ctx.arc(0, 0, 12, Math.PI * 0.1, Math.PI * 0.9);
-    ctx.stroke();
-    ctx.strokeStyle = '#e6aa00';
-    ctx.lineWidth = 3;
-    ctx.stroke();
-    ctx.restore();
-}
-
-function drawObstacle(ob) {
-    const rx = ob.wx - scrollX;
-    if (ob.type === 'crate') {
-        ctx.fillStyle = '#8B6914';
-        ctx.fillRect(rx, getBuildingTop(rx + 16) - 32, 32, 32);
-        ctx.strokeStyle = '#5a3a00';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(rx, getBuildingTop(rx + 16) - 32, 32, 32);
-        ctx.beginPath();
-        ctx.moveTo(rx, getBuildingTop(rx + 16) - 16);
-        ctx.lineTo(rx + 32, getBuildingTop(rx + 16) - 16);
-        ctx.moveTo(rx + 16, getBuildingTop(rx + 16) - 32);
-        ctx.lineTo(rx + 16, getBuildingTop(rx + 16));
-        ctx.strokeStyle = '#5a3a00';
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-    } else {
-        ctx.fillStyle = '#4a8c3f';
-        ctx.fillRect(rx + 4, getBuildingTop(rx + 16) - 44, 24, 44);
-        ctx.fillStyle = '#3d7434';
-        ctx.fillRect(rx - 4, getBuildingTop(rx + 16) - 52, 40, 18);
-    }
-}
-
-function drawGeorge() {
-    if (george.invincible > 0 && Math.floor(george.invincible / 4) % 2 === 0) return;
-    const x = george.x;
-    const y = george.y;
-    const t = frameCount;
-
-    // Legs (animated)
-    const legSwing = george.jumping ? 0 : Math.sin(t * 0.25) * 10;
-    ctx.fillStyle = '#c08040';
-    // Left leg
-    ctx.fillRect(x + 10, y + 32, 9, 16 + Math.sin(t * 0.25) * 4);
-    // Right leg
-    ctx.fillRect(x + 25, y + 32, 9, 16 - Math.sin(t * 0.25) * 4);
-
-    // Body
-    ctx.fillStyle = '#d4905a';
-    ctx.beginPath();
-    ctx.roundRect(x + 6, y + 14, 32, 22, 5);
-    ctx.fill();
-
-    // Belly
-    ctx.fillStyle = '#f0c090';
-    ctx.beginPath();
-    ctx.ellipse(x + 22, y + 24, 10, 9, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Arms
-    ctx.fillStyle = '#c08040';
-    if (george.jumping) {
-        // Arms up when jumping
-        ctx.fillRect(x - 2, y + 10, 9, 16);
-        ctx.fillRect(x + 37, y + 10, 9, 16);
-    } else {
-        ctx.fillRect(x - 2, y + 16 + legSwing * 0.3, 9, 14);
-        ctx.fillRect(x + 37, y + 16 - legSwing * 0.3, 9, 14);
-    }
-
-    // Head
-    ctx.fillStyle = '#d4905a';
-    ctx.beginPath();
-    ctx.arc(x + 22, y + 10, 16, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Face
-    ctx.fillStyle = '#f0c090';
-    ctx.beginPath();
-    ctx.ellipse(x + 22, y + 13, 10, 8, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Eyes
-    ctx.fillStyle = '#2c1a0e';
-    ctx.beginPath();
-    ctx.arc(x + 17, y + 9, 3, 0, Math.PI * 2);
-    ctx.arc(x + 27, y + 9, 3, 0, Math.PI * 2);
-    ctx.fill();
-    // Eye shine
-    ctx.fillStyle = 'white';
-    ctx.beginPath();
-    ctx.arc(x + 18, y + 8, 1.2, 0, Math.PI * 2);
-    ctx.arc(x + 28, y + 8, 1.2, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Smile
-    ctx.strokeStyle = '#7a4020';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.arc(x + 22, y + 14, 5, 0.2, Math.PI - 0.2);
-    ctx.stroke();
-
-    // Hat (classic yellow hat)
-    ctx.fillStyle = '#f5c518';
-    ctx.beginPath();
-    ctx.roundRect(x + 11, y - 4, 22, 10, 2);
-    ctx.fill();
-    ctx.fillRect(x + 7, y + 4, 30, 5);
-    ctx.strokeStyle = '#c9a000';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(x + 7, y + 4, 30, 5);
-
-    // Tail
-    ctx.strokeStyle = '#c08040';
-    ctx.lineWidth = 4;
-    ctx.lineCap = 'round';
-    ctx.beginPath();
-    ctx.moveTo(x + 38, y + 28);
-    ctx.bezierCurveTo(x + 58, y + 20 + Math.sin(t * 0.12) * 8, x + 60, y + 36 + Math.cos(t * 0.1) * 6, x + 50, y + 46 + Math.sin(t * 0.08) * 5);
-    ctx.stroke();
-}
-
-function drawHUD() {
-    // Score banner
-    ctx.fillStyle = 'rgba(0,0,0,0.25)';
-    ctx.beginPath();
-    ctx.roundRect(10, 10, 180, 36, 8);
-    ctx.fill();
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 16px Nunito, sans-serif';
-    ctx.fillText(`🍌 ${score}  ❤️ ${lives}  Lv.${level}`, 20, 33);
-}
-
-function drawScreen(title, sub, color) {
-    ctx.fillStyle = 'rgba(0,0,0,0.52)';
-    ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = color;
-    ctx.font = 'bold 48px "Fredoka One", cursive';
-    ctx.textAlign = 'center';
-    ctx.fillText(title, W / 2, H / 2 - 30);
-    ctx.font = '22px Nunito, sans-serif';
-    ctx.fillStyle = '#fff';
-    ctx.fillText(sub, W / 2, H / 2 + 20);
-    ctx.textAlign = 'left';
-}
-
-function updateUI() {
-    scoreEl.textContent = score;
-    livesEl.textContent = lives;
-    levelEl.textContent = level;
-}
-
-// ── Collision helpers ─────────────────────────────────────
-function collide(ax, ay, aw, ah, bx, by, bw, bh) {
-    return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by;
-}
-
-// ── Game Loop ─────────────────────────────────────────────
-function update() {
-    if (state !== 'playing') return;
-
-    frameCount++;
-    scrollX += speed;
-    speed = 3.5 + level * 0.4 + frameCount * 0.0008;
-
-    // George physics
-    george.vy += 0.65;
-    george.y += george.vy;
-
-    // Platform detection
-    const groundLevel = getBuildingTop(george.x + 12);
-    if (george.y >= groundLevel) {
-        george.y = groundLevel;
-        george.vy = 0;
-        george.jumping = false;
-    }
-
-    // Fell off screen
-    if (george.y > H + 30) {
-        loseLife();
-        return;
-    }
-
-    // Invincibility
-    if (george.invincible > 0) george.invincible--;
-
-    // Banana collection
-    for (const b of bananas) {
-        if (b.collected) continue;
-        const bsx = b.wx - scrollX;
-        const bsyBase = getBuildingTop(bsx + 10) - 28;
-        if (collide(george.x + 4, george.y + 4, george.w - 8, george.h - 8, bsx, bsyBase, 22, 22)) {
-            b.collected = true;
-            score++;
-            updateUI();
-        }
-    }
-
-    // Obstacle collision
-    if (george.invincible === 0) {
-        for (const ob of obstacles) {
-            const rx = ob.wx - scrollX;
-            const obY = getBuildingTop(rx + 16) - (ob.type === 'crate' ? 32 : 44);
-            const obH = ob.type === 'crate' ? 32 : 62;
-            if (collide(george.x + 6, george.y + 6, george.w - 12, george.h - 10, rx, obY, ob.type === 'crate' ? 32 : 32, obH)) {
-                loseLife();
-                return;
-            }
-        }
-    }
-
-    // Level up
-    const allCollected = bananas.filter(b => !b.collected).length === 0;
-    if (allCollected) {
-        level++;
-        score += 5;
-        speed += 0.5;
-        scrollX = 0;
-        george.x = 110; george.y = GROUND; george.vy = 0; george.jumping = false;
-        generateBuildings(); spawnBananas(); spawnObstacles();
-        updateUI();
-    }
-
-    // Extend world
-    const lastB = buildings[buildings.length - 1];
-    if (lastB && (lastB.x + lastB.w - scrollX) < W * 2) {
-        const prevX = lastB.x + lastB.w;
-        const w = 90 + Math.floor(Math.random() * 80);
-        const h = 60 + Math.floor(Math.random() * 140);
-        buildings.push({ x: prevX + 4 + Math.floor(Math.random() * 20), w, h, color: buildingColor(buildings.length) });
-        // Occasionally add banana and obstacle in new area
-        if (Math.random() < 0.8) bananas.push({ wx: prevX + 60, collected: false, bob: Math.random() * Math.PI * 2 });
-        if (Math.random() < 0.4) obstacles.push({ wx: prevX + 120 + Math.random() * 200, type: Math.random() < 0.5 ? 'crate' : 'pipe' });
-    }
-}
-
-function loseLife() {
-    lives--;
-    updateUI();
-    if (lives <= 0) {
-        state = 'over';
-    } else {
-        state = 'dead';
-        george.invincible = 80;
-        george.x = 110;
-        george.y = getBuildingTop(110);
-        george.vy = 0;
-        george.jumping = false;
-        setTimeout(() => { if (state === 'dead') state = 'playing'; }, 1200);
-    }
-}
-
-function draw() {
-    ctx.clearRect(0, 0, W, H);
-    drawSky();
-    drawBuildings();
-    drawGround();
+    // Monkey
+    const monkey = {
+      x: 80,
+      y: groundY - 55,
+      width: 55,
+      height: 55,
+      vy: 0,
+      onGround: true
+    };
 
     // Bananas
-    for (const b of bananas) {
-        if (b.collected) continue;
-        const bsx = b.wx - scrollX;
-        if (bsx < -20 || bsx > W + 20) continue;
-        const bsyBase = getBuildingTop(bsx + 10) - 30;
-        drawBanana(bsx, bsyBase, frameCount + b.bob * 30);
-    }
+    const bananas = [];
+    let bananaTimer = 0;
+    let bananaInterval = 1.2;
 
     // Obstacles
-    for (const ob of obstacles) {
-        const rx = ob.wx - scrollX;
-        if (rx < -40 || rx > W + 40) continue;
-        drawObstacle(ob);
+    const obstacles = [];
+    let obstacleTimer = 0;
+    let obstacleInterval = 1.8;
+
+    function spawnBanana() {
+      const y = groundY - (Math.random() * 80 + 20);
+      bananas.push({
+        x: canvas.width + 20,
+        y,
+        width: 25,
+        height: 25,
+        collected: false
+      });
     }
 
-    drawGeorge();
-    drawHUD();
+    function spawnObstacle() {
+      const type = Math.random() < 0.5 ? "crate" : "pipe";
 
-    if (state === 'start') {
-        drawScreen("🐒 Banana Dash!", "Press SPACE or tap to start!", '#ffd966');
-    } else if (state === 'dead') {
-        ctx.fillStyle = 'rgba(255,60,60,0.35)';
-        ctx.fillRect(0, 0, W, H);
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 26px Nunito, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(`${lives} lives left — keep going!`, W / 2, H / 2);
-        ctx.textAlign = 'left';
-    } else if (state === 'over') {
-        drawScreen("Game Over!", `Score: ${score} bananas 🍌  — Tap to try again`, '#ff6b6b');
+      if (type === "crate") {
+        obstacles.push({
+          x: canvas.width + 20,
+          y: groundY - 35,
+          width: 35,
+          height: 35,
+          type
+        });
+      } else {
+        const minHeight = 40;
+        const maxHeight = 90;
+        const height = Math.random() * (maxHeight - minHeight) + minHeight;
+
+        obstacles.push({
+          x: canvas.width + 20,
+          y: groundY - height,
+          width: 40,
+          height,
+          type
+        });
+      }
     }
-}
 
-function loop() {
-    update();
-    draw();
-    requestAnimationFrame(loop);
-}
+    function resetGame() {
+      score = 0;
+      gameSpeed = 300;
+      bananas.length = 0;
+      obstacles.length = 0;
+      monkey.y = groundY - monkey.height;
+      monkey.vy = 0;
+      monkey.onGround = true;
+      bananaTimer = 0;
+      obstacleTimer = 0;
+      scoreEl.textContent = "Score: 0";
+    }
 
-loop();
-</script>
+    function startGame() {
+      if (!isRunning) {
+        resetGame();
+        isRunning = true;
+        messageEl.style.display = "none";
+        lastTime = performance.now();
+        requestAnimationFrame(loop);
+      }
+    }
+
+    function endGame() {
+      isRunning = false;
+
+      if (score > highScore) {
+        highScore = score;
+        localStorage.setItem("monkeyHighScore", highScore);
+        highScoreEl.textContent = "High Score: " + highScore;
+      }
+
+      messageEl.textContent = "Game Over! Press SPACE or ↑ to restart";
+      messageEl.style.display = "block";
+    }
+
+    function jump() {
+      if (monkey.onGround) {
+        monkey.vy = -600;
+        monkey.onGround = false;
+      }
+    }
+
+    function update(dt) {
+      // Progressive speed increase
+      gameSpeed += dt * 20;
+
+      monkey.vy += gravity * dt;
+      monkey.y += monkey.vy * dt;
+
+      if (monkey.y + monkey.height >= groundY) {
+        monkey.y = groundY - monkey.height;
+        monkey.vy = 0;
+        monkey.onGround = true;
+      }
+
+      bananaTimer += dt;
+      if (bananaTimer >= bananaInterval) {
+        bananaTimer = 0;
+        spawnBanana();
+      }
+
+      bananas.forEach((b, i) => {
+        b.x -= gameSpeed * dt;
+
+        if (!b.collected && isColliding(monkey, b)) {
+          b.collected = true;
+          score++;
+          scoreEl.textContent = "Score: " + score;
+        }
+
+        if (b.x + b.width < 0) bananas.splice(i, 1);
+      });
+
+      obstacleTimer += dt;
+      if (obstacleTimer >= obstacleInterval) {
+        obstacleTimer = 0;
+        spawnObstacle();
+      }
+
+      obstacles.forEach((o, i) => {
+        o.x -= gameSpeed * dt;
+
+        if (isColliding(monkey, o)) {
+          endGame();
+        }
+
+        if (o.x + o.width < 0) obstacles.splice(i, 1);
+      });
+    }
+
+    function isColliding(a, b) {
+      return (
+        a.x < b.x + b.width &&
+        a.x + a.width > b.x &&
+        a.y < b.y + b.height &&
+        a.y + a.height > b.y
+      );
+    }
+
+    // DRAWING FUNCTIONS -----------------------------------------------------
+
+    function drawGround() {
+      ctx.strokeStyle = "#654321";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(0, groundY);
+      ctx.lineTo(canvas.width, groundY);
+      ctx.stroke();
+    }
+
+    // 🐒 Clean vector monkey, leaning forward
+    function drawMonkey() {
+      const m = monkey;
+
+      // Tail
+      ctx.strokeStyle = "#8b4513";
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.arc(m.x - 10, m.y + 35, 25, Math.PI * 0.2, Math.PI * 1.4);
+      ctx.stroke();
+
+      // Body (leaning forward)
+      ctx.fillStyle = "#8b4513";
+      ctx.beginPath();
+      ctx.ellipse(m.x + 30, m.y + 35, 22, 30, -0.3, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Head
+      ctx.beginPath();
+      ctx.ellipse(m.x + 45, m.y + 20, 18, 20, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Face mask
+      ctx.fillStyle = "#f4d19b";
+      ctx.beginPath();
+      ctx.ellipse(m.x + 45, m.y + 25, 14, 14, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Ears
+      ctx.fillStyle = "#8b4513";
+      ctx.beginPath();
+      ctx.arc(m.x + 28, m.y + 18, 8, 0, Math.PI * 2);
+      ctx.arc(m.x + 62, m.y + 18, 8, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Eyes
+      ctx.fillStyle = "#000";
+      ctx.beginPath();
+      ctx.arc(m.x + 40, m.y + 20, 3, 0, Math.PI * 2);
+      ctx.arc(m.x + 50, m.y + 20, 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Arms (one forward, one back)
+      ctx.strokeStyle = "#8b4513";
+      ctx.lineWidth = 8;
+      ctx.beginPath();
+      ctx.moveTo(m.x + 20, m.y + 35);
+      ctx.lineTo(m.x + 5, m.y + 45);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(m.x + 40, m.y + 40);
+      ctx.lineTo(m.x + 55, m.y + 50);
+      ctx.stroke();
+
+      // Legs (running pose)
+      ctx.beginPath();
+      ctx.moveTo(m.x + 25, m.y + 60);
+      ctx.lineTo(m.x + 10, m.y + 75);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(m.x + 35, m.y + 60);
+      ctx.lineTo(m.x + 50, m.y + 75);
+      ctx.stroke();
+    }
+
+    // 🍌 Vector bananas
+    function drawBananas() {
+      bananas.forEach(b => {
+        if (b.collected) return;
+
+        ctx.strokeStyle = "#ccaa00";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, 12, Math.PI * 0.2, Math.PI * 1.2);
+        ctx.stroke();
+
+        ctx.strokeStyle = "#ffd700";
+        ctx.lineWidth = 6;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, 12, Math.PI * 0.2, Math.PI * 1.2);
+        ctx.stroke();
+      });
+    }
+
+    // 🧱 Draw crates + pipes
+    function drawObstacles() {
+      obstacles.forEach(o => {
+        if (o.type === "crate") {
+          ctx.fillStyle = "#8b5a2b";
+          ctx.fillRect(o.x, o.y, o.width, o.height);
+        } else {
+          ctx.fillStyle = "#228b22";
+          ctx.fillRect(o.x, o.y, o.width, o.height);
+        }
+      });
+    }
+
+    // MAIN LOOP -------------------------------------------------------------
+
+    function loop(timestamp) {
+      if (!isRunning) return;
+
+      const dt = (timestamp - lastTime) / 1000;
+      lastTime = timestamp;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      update(dt);
+      drawGround();
+      drawMonkey();
+      drawBananas();
+      drawObstacles();
+
+      requestAnimationFrame(loop);
+    }
+
+    window.addEventListener("keydown", (e) => {
+      if (e.code === "Space" || e.code === "ArrowUp") {
+        if (!isRunning) startGame();
+        else jump();
+      }
+    });
+
+    messageEl.style.display = "block";
+  </script>
 </body>
 </html>

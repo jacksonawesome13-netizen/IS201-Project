@@ -131,61 +131,67 @@
     <div id="video" class="content-section alt-bg">
         <div class="section-inner">
             <h2>Watch &amp; Learn</h2>
-            <p>Here's a beautiful video on the art of Italian pasta-making — the kind of technique that has been passed down through generations.</p>
+            <p>Here's a beautiful video on the art of Italian pasta-making* — the kind of technique that has been passed down through generations.</p>
             <div id="video-wrapper">
                 <iframe
                     width="760"
                     height="428"
-                    src="https://www.youtube.com/embed/IlHU7H0tazA"
+                    src="https://www.youtube.com/embed/0rtjiSUk7YI"
                     title="Italian Pasta Making"
                     frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     allowfullscreen>
                 </iframe>
             </div>
+              <br>
+            <p>*Stavo scherzando. Questa pasta è una abominazione, non la fare!!!!!</p>
         </div>
     </div>
 
     <!-- ===== TABLEAU DATA SECTION ===== -->
-    <div id="data" class="content-section">
-        <div class="section-inner">
-            <h2>Italian Food — By the Numbers</h2>
-            <p>Italy is one of the world's top food exporters. Here's an interactive visualization of global food export data, with Italy's iconic products featured prominently.</p>
-            <div id="tableau-container">
-                <div class='tableauPlaceholder' id='viz1713000000000' style='position: relative; width:100%;'>
-                    <noscript>
-                        <a href='#'>
-                            <img alt='Global Food Exports' src='https://public.tableau.com/static/images/Fo/FoodExports_17130/Dashboard1/1_rss.png' style='border: none' />
-                        </a>
-                    </noscript>
-                    <object class='tableauViz' style='display:none;'>
-                        <param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' />
-                        <param name='embed_code_version' value='3' />
-                        <param name='site_root' value='' />
-                        <param name='name' value='WorldIndicators/GDPpercapita' />
-                        <param name='tabs' value='no' />
-                        <param name='toolbar' value='yes' />
-                        <param name='animate_transition' value='yes' />
-                        <param name='display_static_image' value='yes' />
-                        <param name='display_spinner' value='yes' />
-                        <param name='display_overlay' value='yes' />
-                        <param name='display_count' value='yes' />
-                        <param name='language' value='en-US' />
-                    </object>
-                </div>
-                <script type='text/javascript'>
-                    var divElement = document.getElementById('viz1713000000000');
-                    var vizElement = divElement.getElementsByTagName('object')[0];
-                    vizElement.style.width='100%';
-                    vizElement.style.height='527px';
-                    var scriptElement = document.createElement('script');
-                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
-                    vizElement.parentNode.insertBefore(scriptElement, vizElement);
-                </script>
+   <div id="data" class="content-section">
+    <div class="section-inner">
+        <h2>Italian Food — By the Numbers</h2>
+        <p>Italy is one of the world's top food producers and creates some of the worlds most popular cusine. This graph shows data of the popularity of different foods recorded in orders of Italian cusine.</p>
+
+        <div id="tableau-container">
+            <div class='tableauPlaceholder' id='viz1776843192688' style='position: relative; width:100%; height:700px;'>
+                <noscript>
+                    <a href='#'>
+                        <img alt='Demand of orders / Cuisine-Italian'
+                             src='https://public.tableau.com/static/images/Fo/Food-Forecasting-Analysis-Data-Italian-Demand-of-Orders/DemandofordersCuisine-Italian/1_rss.png'
+                             style='border: none' />
+                    </a>
+                </noscript>
+
+                <object class='tableauViz' style='display:none;'>
+                    <param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' />
+                    <param name='embed_code_version' value='3' />
+                    <param name='site_root' value='' />
+                    <param name='name' value='Food-Forecasting-Analysis-Data-Italian-Demand-of-Orders/DemandofordersCuisine-Italian' />
+                    <param name='tabs' value='no' />
+                    <param name='toolbar' value='yes' />
+                    <param name='animate_transition' value='yes' />
+                    <param name='display_static_image' value='yes' />
+                    <param name='display_spinner' value='yes' />
+                    <param name='display_overlay' value='yes' />
+                    <param name='display_count' value='yes' />
+                    <param name='language' value='it-IT' />
+                </object>
             </div>
+
+            <script type='text/javascript'>
+                var divElement = document.getElementById('viz1776843192688');
+                var vizElement = divElement.getElementsByTagName('object')[0];
+                vizElement.style.width = '100%';
+                vizElement.style.height = (divElement.offsetWidth * 0.75) + 'px';
+                var scriptElement = document.createElement('script');
+                scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
+                vizElement.parentNode.insertBefore(scriptElement, vizElement);
+            </script>
         </div>
     </div>
-
+</div>
     <!-- ===== RESUME SECTION ===== -->
     <div id="resume-section" class="content-section alt-bg">
         <div class="section-inner">
